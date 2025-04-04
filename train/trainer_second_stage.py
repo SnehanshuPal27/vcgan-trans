@@ -116,8 +116,13 @@ def trainer_noGAN(opt):
     prev_time = time.time()
     
     # For loop training
+    skipped_sequences = 0
     for epoch in range(opt.epochs):
         for iteration, (in_part, out_part) in enumerate(dataloader):
+            if hasattr(in_part, 'skipped'):
+                skipped_sequences += 1
+                if skipped_sequences % 100 == 0:
+                    print(f"Skipped {skipped_sequences} sequences so far")
             
             # Train Generator
             optimizer_G.zero_grad()
@@ -331,8 +336,13 @@ def trainer_LSGAN(opt):
     Tensor = torch.cuda.FloatTensor
 
     # For loop training
+    skipped_sequences = 0
     for epoch in range(opt.epochs):
         for iteration, (in_part, out_part) in enumerate(dataloader):
+            if hasattr(in_part, 'skipped'):
+                skipped_sequences += 1
+                if skipped_sequences % 100 == 0:
+                    print(f"Skipped {skipped_sequences} sequences so far")
             
             # Train Generator
             optimizer_G.zero_grad()
@@ -568,8 +578,13 @@ def trainer_WGAN(opt):
     prev_time = time.time()
     
     # For loop training
+    skipped_sequences = 0
     for epoch in range(opt.epochs):
         for iteration, (in_part, out_part) in enumerate(dataloader):
+            if hasattr(in_part, 'skipped'):
+                skipped_sequences += 1
+                if skipped_sequences % 100 == 0:
+                    print(f"Skipped {skipped_sequences} sequences so far")
             
             # Train Generator
             optimizer_G.zero_grad()
@@ -824,8 +839,13 @@ def trainer_WGANGP(opt):
         return gradient_penalty
 
     # For loop training
+    skipped_sequences = 0
     for epoch in range(opt.epochs):
         for iteration, (in_part, out_part) in enumerate(dataloader):
+            if hasattr(in_part, 'skipped'):
+                skipped_sequences += 1
+                if skipped_sequences % 100 == 0:
+                    print(f"Skipped {skipped_sequences} sequences so far")
             
             # Train Generator
             optimizer_G.zero_grad()
@@ -954,4 +974,4 @@ def trainer_WGANGP(opt):
             img_list = [p_t, y_t]
             name_list = ['pred', 'gt']
             utils.save_sample_png(sample_folder = opt.sample_path, sample_name = 'epoch%d' % (epoch + 1), img_list = img_list, name_list = name_list)
-        
+

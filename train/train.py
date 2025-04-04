@@ -13,8 +13,8 @@ if __name__ == "__main__":
     parser.add_argument('--save_by_iter', type = int, default = 10000, help = 'interval between model checkpoints (by iterations)')
     parser.add_argument('--save_path', type = str, default = './models', help = 'save the pre-trained model to certain path')
     parser.add_argument('--sample_path', type = str, default = './samples', help = 'save the pre-trained model to certain path')
-    parser.add_argument('--load_name', type = str, default = './models/First_Stage_final.pth', help = 'load the pre-trained model with certain epoch')
-    parser.add_argument('--feature_extractor_path', type = str, default = './trained_models/resnet50_in_epoch150_bs256.pth', help = 'the path that contains the pre-trained ResNet model')
+    parser.add_argument('--load_name', type = str, default =None, help = 'load the pre-trained model with certain epoch')
+    parser.add_argument('--feature_extractor_path', type = str, default = './trained_models/resnet50_in_rgb_epoch150_bs256.pth', help = 'the path that contains the pre-trained ResNet model')
     parser.add_argument('--pwcnet_path', type = str, default = './trained_models/pwcNet-default.pytorch', help = 'the path that contains the pre-trained PWCNet model')
     parser.add_argument('--perceptual_path', type = str, default = './trained_models/vgg16_pretrained.pth', help = 'the path that contains the pre-trained VGG-16 model')
     parser.add_argument('--video_class_txt', type = str, default = './txt/DAVIS_videvo_train_class.txt', help = 'the path that contains DAVIS_videvo_train_class.txt')
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     parser.add_argument('--init_gain', type = float, default = 0.02, help = 'the standard deviation if Gaussian normalization')
     # dataset
     parser.add_argument('--baseroot', type = str, \
-        default = 'C:\\Users\\yzzha\\Desktop\\dataset\\1', \
+        default = '/fab3/btech/2022/snehanshu.pal22b/ImageNetSmall/mini_imagenet_images/train', \
             help = 'color image baseroot')
     # ./ILSVRC2012_train
     # ./DAVIS_videvo_train

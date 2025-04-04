@@ -7,6 +7,14 @@ from skimage import measure
 from skimage import transform
 from skimage import color
 
+def resize_image(image_path, size=(64, 64)):
+    """
+    Resize the image to the given size.
+    """
+    image = io.imread(image_path)
+    resized_image = transform.resize(image, size)
+    return resized_image
+
 # Compute the mean-squared error between two images
 def MSE(srcpath, dstpath, gray2rgb = False, scale = True):
     scr = io.imread(srcpath)
@@ -25,12 +33,34 @@ def MSE(srcpath, dstpath, gray2rgb = False, scale = True):
     return mse
 
 # Compute the normalized root mean-squared error (NRMSE) between two images
-def NRMSE(srcpath, dstpath, gray2rgb = False, scale = True, mse_type = 'Euclidean'):
+# def NRMSE(srcpath, dstpath, gray2rgb = False, scale = True, mse_type = 'Euclidean'):
+#     scr = io.imread(srcpath)
+#     dst = io.imread(dstpath)
+#     if gray2rgb:
+#         dst = np.expand_dims(dst, axis = 2)
+#         dst = np.concatenate((dst, dst, dst), axis = 2)
+#     if scale:
+#         resize_h = scr.shape[0]
+#         resize_w = scr.shape[1]
+#         dst = cv2.resize(dst, (resize_w, resize_h))
+#     else:
+#         resize_h = dst.shape[0]
+#         resize_w = dst.shape[1]
+#         scr = cv2.resize(scr, (resize_w, resize_h))
+#     nrmse = measure.compare_nrmse(scr, dst, norm_type = mse_type)
+#     return nrmse
+
+# added this because syntax got deprecated of compare_nrmse function
+from skimage import io, metrics
+import cv2
+import numpy as np
+
+def NRMSE(srcpath, dstpath, gray2rgb=False, scale=True, mse_type='Euclidean'):
     scr = io.imread(srcpath)
     dst = io.imread(dstpath)
     if gray2rgb:
-        dst = np.expand_dims(dst, axis = 2)
-        dst = np.concatenate((dst, dst, dst), axis = 2)
+        dst = np.expand_dims(dst, axis=2)
+        dst = np.concatenate((dst, dst, dst), axis=2)
     if scale:
         resize_h = scr.shape[0]
         resize_w = scr.shape[1]
@@ -39,16 +69,37 @@ def NRMSE(srcpath, dstpath, gray2rgb = False, scale = True, mse_type = 'Euclidea
         resize_h = dst.shape[0]
         resize_w = dst.shape[1]
         scr = cv2.resize(scr, (resize_w, resize_h))
-    nrmse = measure.compare_nrmse(scr, dst, norm_type = mse_type)
+    nrmse = metrics.normalized_root_mse(scr, dst, normalization=mse_type)
     return nrmse
 
 # Compute the peak signal to noise ratio (PSNR) for an image
-def PSNR(srcpath, dstpath, gray2rgb = False, scale = True):
+# def PSNR(srcpath, dstpath, gray2rgb = False, scale = True):
+#     scr = io.imread(srcpath)
+#     dst = io.imread(dstpath)
+#     if gray2rgb:
+#         dst = np.expand_dims(dst, axis = 2)
+#         dst = np.concatenate((dst, dst, dst), axis = 2)
+#     if scale:
+#         resize_h = scr.shape[0]
+#         resize_w = scr.shape[1]
+#         dst = cv2.resize(dst, (resize_w, resize_h))
+#     else:
+#         resize_h = dst.shape[0]
+#         resize_w = dst.shape[1]
+#         scr = cv2.resize(scr, (resize_w, resize_h))
+#     psnr = measure.compare_psnr(scr, dst)
+#     return psnr
+
+from skimage import io, metrics
+import cv2
+import numpy as np
+
+def PSNR(srcpath, dstpath, gray2rgb=False, scale=True):
     scr = io.imread(srcpath)
     dst = io.imread(dstpath)
     if gray2rgb:
-        dst = np.expand_dims(dst, axis = 2)
-        dst = np.concatenate((dst, dst, dst), axis = 2)
+        dst = np.expand_dims(dst, axis=2)
+        dst = np.concatenate((dst, dst, dst), axis=2)
     if scale:
         resize_h = scr.shape[0]
         resize_w = scr.shape[1]
@@ -57,16 +108,35 @@ def PSNR(srcpath, dstpath, gray2rgb = False, scale = True):
         resize_h = dst.shape[0]
         resize_w = dst.shape[1]
         scr = cv2.resize(scr, (resize_w, resize_h))
-    psnr = measure.compare_psnr(scr, dst)
+    psnr = metrics.peak_signal_noise_ratio(scr, dst)
     return psnr
 
 # Compute the mean structural similarity index between two images
-def SSIM(srcpath, dstpath, gray2rgb = False, scale = True, RGBinput = True):
+# def SSIM(srcpath, dstpath, gray2rgb = False, scale = True, RGBinput = True):
+#     scr = io.imread(srcpath)
+#     dst = io.imread(dstpath)
+#     if gray2rgb:
+#         dst = np.expand_dims(dst, axis = 2)
+#         dst = np.concatenate((dst, dst, dst), axis = 2)
+#     if scale:
+#         resize_h = scr.shape[0]
+#         resize_w = scr.shape[1]
+#         dst = cv2.resize(dst, (resize_w, resize_h))
+#     else:
+#         resize_h = dst.shape[0]
+#         resize_w = dst.shape[1]
+#         scr = cv2.resize(scr, (resize_w, resize_h))
+#     ssim = measure.compare_ssim(scr, dst, multichannel = RGBinput)
+#     return ssim
+
+def SSIM(srcpath, dstpath, gray2rgb=False, scale=True, RGBinput=True):
     scr = io.imread(srcpath)
     dst = io.imread(dstpath)
+    print(scr.shape)
+    print(dst.shape)
     if gray2rgb:
-        dst = np.expand_dims(dst, axis = 2)
-        dst = np.concatenate((dst, dst, dst), axis = 2)
+        dst = np.expand_dims(dst, axis=2)
+        dst = np.concatenate((dst, dst, dst), axis=2)
     if scale:
         resize_h = scr.shape[0]
         resize_w = scr.shape[1]
@@ -75,7 +145,7 @@ def SSIM(srcpath, dstpath, gray2rgb = False, scale = True, RGBinput = True):
         resize_h = dst.shape[0]
         resize_w = dst.shape[1]
         scr = cv2.resize(scr, (resize_w, resize_h))
-    ssim = measure.compare_ssim(scr, dst, multichannel = RGBinput)
+    ssim = metrics.structural_similarity(scr, dst, multichannel=RGBinput, win_size=7, channel_axis=-1)
     return ssim
 
 # read a txt expect EOF
@@ -117,13 +187,19 @@ def Dset_Acuuracy(imglist, refpath, basepath, gray2rgb = False, scale = True):
     nrmseratio = 0
     psnrratio = 0
     ssimratio = 0
-
+    print('The number of images: %d' % len(imglist))
+    print('The reference path: %s' % refpath)
+    print('The base path: %s' % basepath)
     # Compute the accuracy
     for i in range(len(imglist)):
         # Full imgpath
         imgname = imglist[i]# + '.JPEG'
-        refimgpath = os.path.join(refpath, 'DAVIS', imgname)
-        imgpath = os.path.join(basepath, 'DAVIS', imgname)
+        refimgpath = os.path.join(refpath,imgname)
+        imgpath = os.path.join(basepath,imgname)
+        print(refimgpath)
+        print(imgpath)
+        # refimgpath = os.path.join(refpath, 'DAVIS', imgname)
+        # imgpath = os.path.join(basepath, 'DAVIS', imgname)
         # Compute the traditional indexes
         nrmse = NRMSE(refimgpath, imgpath, gray2rgb, scale, 'Euclidean')
         psnr = PSNR(refimgpath, imgpath, gray2rgb, scale)
@@ -145,23 +221,23 @@ if __name__ == "__main__":
     
     # Create argument parser
     parser = argparse.ArgumentParser()
-    parser.add_argument('--imglist', type = str, default = './DAVIS_test_imagelist_without_first_frame.txt', help = 'define imglist txt path')
+    parser.add_argument('--imglist', type = str, default = '/fab3/btech/2022/snehanshu.pal22b/ImageNetSmall/ModifiedVCGAN/VCGAN/evaluation/PSNR_SSIM_MSE_NRMSE/DAVIS_test_imagelist_without_first_frame.txt', help = 'define imglist txt path')
     parser.add_argument('--refpath', type = str, \
-        default = 'F:\\dataset, my paper related\\VCGAN dataset\\test\\input', \
+        default = '/fab3/btech/2022/snehanshu.pal22b/VCGAN/davis/DAVIS/JPEGImages/480p', \
             help = 'define reference path')
     parser.add_argument('--basepath', type = str, \
-        default = 'F:\\submitted papers\\my papers\\VCGAN v3\\VCGAN results\\l110_per5_gan1_short3_long5_lr5e-5', \
+        default = '/fab3/btech/2022/snehanshu.pal22b/ImageNetSmall/ModifiedVCGAN/VCGAN/train/DAVIS', \
             help = 'define imgpath')
     parser.add_argument('--gray2rgb', type = bool, default = False, help = 'whether there is an input is grayscale')
     parser.add_argument('--scale', type = tuple, default = True, help = 'whether the input needs resize')
-    parser.add_argument('--savelist', type = bool, default = False, help = 'whether the results should be saved')
-    parser.add_argument('--savereport', type = bool, default = False, help = 'whether the results should be saved')
+    parser.add_argument('--savelist', type = bool, default = True, help = 'whether the results should be saved')
+    parser.add_argument('--savereport', type = bool, default = True, help = 'whether the results should be saved')
     opt = parser.parse_args()
     # print(opt)
 
     # Read all names
     imglist = text_readlines(opt.imglist)
-    
+    print('The number of images: %d' % len(imglist))
     nrmselist, psnrlist, ssimlist, nrmseratio, psnrratio, ssimratio = Dset_Acuuracy(imglist, opt.refpath, opt.basepath, gray2rgb = opt.gray2rgb, scale = opt.scale)
 
     print(opt.basepath)

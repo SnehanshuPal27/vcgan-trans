@@ -1,0 +1,1 @@
+/fab3/btech/2022/snehanshu.pal22b/ImageNetSmall/ModifiedVCGAN/VCGAN/train/DAVIS 	 nrmse: 0.162194, psnr: 22.549642, ssim: 0.812247

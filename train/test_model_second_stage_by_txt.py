@@ -60,7 +60,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # testing parameters
     parser.add_argument('--videopath', type = str, \
-        default = '/home/zyz/Documents/dataset/DAVIS_videvo_test/DAVIS', \
+        default = '/fab3/btech/2022/snehanshu.pal22b/VCGAN/davis/DAVIS/JPEGImages/480p', \
             help = 'testing video folder path')
     parser.add_argument('--savepath', type = str, \
         default = './DAVIS', \
@@ -68,11 +68,11 @@ if __name__ == "__main__":
     parser.add_argument('--class_txt', type = str, default = './txt/DAVIS_test_class.txt', help = 'DAVIS / videvo classes')
     parser.add_argument('--imagelist_txt', type = str, default = './txt/DAVIS_test_imagelist.txt', help = 'DAVIS / videvo image full paths')
     parser.add_argument('--load_name', type = str, \
-        default = './models/model1_Second_Stage_epoch500_bs1_448p.pth', \
+        default = './models/Second_Stage_epoch10_bs1_256p.pth', \
             help = 'load the trained pth model with certain epoch')
     parser.add_argument('--pwcnet_path', type = str, default = './trained_models/pwcNet-default.pytorch', help = 'the path that contains the PWCNet model')
-    parser.add_argument('--crop_size_h', type = int, default = 448, help = 'single patch size')
-    parser.add_argument('--crop_size_w', type = int, default = 832, help = 'single patch size')
+    parser.add_argument('--crop_size_h', type = int, default =256, help = 'single patch size')
+    parser.add_argument('--crop_size_w', type = int, default = 256, help = 'single patch size')
     parser.add_argument('--comparison', type = bool, default = True, help = 'compare with original RGB image or not')
     # GPU parameters
     parser.add_argument('--test_gpu', type = str, default = '0', help = 'gpu_ids: e.g. 0  0,1  0,1,2  use -1 for CPU')

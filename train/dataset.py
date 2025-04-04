@@ -150,6 +150,20 @@ class MultiFramesDataset(Dataset):
         for i in range(len(imglist)):
             if self.opt.iter_frames > len(imglist[i]):
                 raise Exception("Your given iter_frames is too big for this training set!")
+        
+        # Validate sequence lengths
+        invalid_sequences = 0
+        for i, class_images in enumerate(self.imgroot):
+            for imgname in class_images:
+                imgpath = os.path.join(self.opt.baseroot, imgname)
+                parent_dir = os.path.dirname(imgpath)
+                if len(os.listdir(parent_dir)) < opt.iter_frames:
+                    invalid_sequences += 1
+                    break  # Count each class only once
+                
+        if invalid_sequences > 0:
+            print(f"Warning: Found {invalid_sequences} sequences with fewer than {opt.iter_frames} frames")
+            print(f"These sequences will be skipped during training")
 
     def get_lab(self, imgpath):
         # Pre-processing, let all the images are in RGB color space
@@ -183,10 +197,18 @@ class MultiFramesDataset(Dataset):
 
     def __getitem__(self, index):
         # Choose a category of dataset, it is fair for each dataset to be chosen
-        N = len(self.imgroot[index])
-        # Pre-define the starting frame index in 0 ~ N - opt.iter_frames
+        N = len(self.imgroot[index])  # Total number of frames
+        
+        # Skip invalid instances by recursively calling next index
+        if N < self.opt.iter_frames:
+            print(f"Warning: Skipping sequence at index {index} - insufficient frames ({N} < {self.opt.iter_frames})")
+            # Get next valid index by modulo with dataset size
+            next_index = (index + 1) % len(self)
+            return self.__getitem__(next_index)
+            
+        # Continue with normal processing for valid sequences
         T = random.randint(0, N - self.opt.iter_frames)
-        # Sample from T to T + opt.iter_frames
+        # Sample from T to T + self.opt.iter_frames
         in_part = []
         out_part = []
         for i in range(T, T + self.opt.iter_frames):

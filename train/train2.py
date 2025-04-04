@@ -9,15 +9,15 @@ if __name__ == "__main__":
     # pre-train, saving, and loading parameters
     parser.add_argument('--pre_train', type = bool, default = False, help = 'pre-train ot not') # True for first stage, False for second stage
     parser.add_argument('--save_mode', type = str, default = 'epoch', help = 'saving mode, and by_epoch saving is recommended')
-    parser.add_argument('--save_by_epoch', type = int, default = 1, help = 'interval between model checkpoints (by epochs)')
+    parser.add_argument('--save_by_epoch', type = int, default = 5, help = 'interval between model checkpoints (by epochs)')
     parser.add_argument('--save_by_iter', type = int, default = 10000, help = 'interval between model checkpoints (by iterations)')
     parser.add_argument('--save_path', type = str, default = './models', help = 'save the pre-trained model to certain path')
     parser.add_argument('--sample_path', type = str, default = './samples', help = 'save the pre-trained model to certain path')
-    parser.add_argument('--load_name', type = str, default = './trained_models/First_Stage_final.pth', help = 'load the pre-trained model with certain epoch')
+    parser.add_argument('--load_name', type = str, default = './trained_models/First_Stage_epoch10_bs16.pth', help = 'load the pre-trained model with certain epoch')
     parser.add_argument('--pwcnet_path', type = str, default = './trained_models/pwcNet-default.pytorch', help = 'the path that contains the pre-trained PWCNet model')
     parser.add_argument('--perceptual_path', type = str, default = './trained_models/vgg16_pretrained.pth', help = 'the path that contains the pre-trained VGG-16 model')
-    parser.add_argument('--video_class_txt', type = str, default = './txt/DAVIS_videvo_train_class.txt', help = 'the path that contains DAVIS_videvo_train_class.txt')
-    parser.add_argument('--video_imagelist_txt', type = str, default = './txt/DAVIS_videvo_train_imagelist.txt', help = 'the path that contains DAVIS_videvo_train_imagelist.txt')
+    parser.add_argument('--video_class_txt', type = str, default = './txt/filtered_DAVIS_videvo_train_class.txt', help = 'the path that contains DAVIS_videvo_train_class.txt')
+    parser.add_argument('--video_imagelist_txt', type = str, default = './txt/filtered_DAVIS_videvo_train_imagelist.txt', help = 'the path that contains DAVIS_videvo_train_imagelist.txt')
     # GPU parameters
     parser.add_argument('--multi_gpu', type = bool, default = False, help = 'True for more than 1 GPU, we recommend to use 4 NVIDIA Tesla v100 GPUs')
     parser.add_argument('--cudnn_benchmark', type = bool, default = True, help = 'True for unchanged input data type')
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     parser.add_argument('--init_gain', type = float, default = 0.02, help = 'the standard deviation if Gaussian normalization')
     # dataset
     parser.add_argument('--baseroot', type = str, \
-        default = 'C:\\Users\\yzzha\\Desktop\\dataset\\ILSVRC2012_val_256', \
+        default = '/fab3/btech/2022/snehanshu.pal22b/VCGAN/davis/DAVIS/JPEGImages/480p', \
             help = 'color image baseroot')
     # ./ILSVRC2012_train
     # ./DAVIS_videvo_train
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     parser.add_argument('--sample_size', type = int, default = 1, help = 'sample number for the dataset at first stage')
     parser.add_argument('--crop_size', type = int, default = 256, help = 'single patch size') # first stage: 256 * 256
     parser.add_argument('--crop_size_h', type = int, default = 256, help = 'single patch size') # second stage (128p, 256p, 448p): 128, 256, 448
-    parser.add_argument('--crop_size_w', type = int, default = 448, help = 'single patch size') # second stage (128p, 256p, 448p): 256, 448, 832
+    parser.add_argument('--crop_size_w', type = int, default = 256, help = 'single patch size') # second stage (128p, 256p, 448p): 256, 448, 832
     parser.add_argument('--geometry_aug', type = bool, default = False, help = 'geometry augmentation (scaling)')
     parser.add_argument('--angle_aug', type = bool, default = False, help = 'geometry augmentation (rotation, flipping)')
     parser.add_argument('--scale_min', type = float, default = 1, help = 'min scaling factor')
