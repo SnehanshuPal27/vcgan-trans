@@ -71,6 +71,9 @@ if __name__ == "__main__":
     parser.add_argument('--angle_aug', type = bool, default = False, help = 'geometry augmentation (rotation, flipping)')
     parser.add_argument('--scale_min', type = float, default = 1, help = 'min scaling factor')
     parser.add_argument('--scale_max', type = float, default = 1, help = 'max scaling factor')
+    parser.add_argument('--reproducible', type=bool, default=False, help='Use reproducible initialization')
+    parser.add_argument('--repro_seed', type=int, default=42, help='Seed for reproducible initialization')
+    parser.add_argument('--model_variant', type=str, default='base', help='Model variant name for reproducible init')
     opt = parser.parse_args()
     print(opt)
     

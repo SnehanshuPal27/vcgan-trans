@@ -68,7 +68,7 @@ if __name__ == "__main__":
     parser.add_argument('--class_txt', type = str, default = './txt/DAVIS_test_class.txt', help = 'DAVIS / videvo classes')
     parser.add_argument('--imagelist_txt', type = str, default = './txt/DAVIS_test_imagelist.txt', help = 'DAVIS / videvo image full paths')
     parser.add_argument('--load_name', type = str, \
-        default = './models/Second_Stage_epoch10_bs1_256p.pth', \
+        default = './models/Second_Stage_epoch5_bs1_256p.pth', \
             help = 'load the trained pth model with certain epoch')
     parser.add_argument('--pwcnet_path', type = str, default = './trained_models/pwcNet-default.pytorch', help = 'the path that contains the PWCNet model')
     parser.add_argument('--crop_size_h', type = int, default =256, help = 'single patch size')
@@ -86,6 +86,9 @@ if __name__ == "__main__":
     parser.add_argument('--norm', type = str, default = 'in', help = 'normalization type')
     parser.add_argument('--init_type', type = str, default = 'normal', help = 'intialization type for generator and discriminator')
     parser.add_argument('--init_gain', type = float, default = 0.02, help = 'the standard deviation if Gaussian normalization')
+    parser.add_argument('--reproducible', type=bool, default=False, help='Use reproducible initialization')
+    parser.add_argument('--repro_seed', type=int, default=42, help='Seed for reproducible initialization')
+    parser.add_argument('--model_variant', type=str, default='base', help='Model variant name for reproducible init')
     opt = parser.parse_args()
     
     # ----------------------------------------

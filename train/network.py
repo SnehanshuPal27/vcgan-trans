@@ -7,14 +7,31 @@ from network_module import *
 # ----------------------------------------
 #         Initialize the networks
 # ----------------------------------------
-def weights_init(net, init_type = 'normal', init_gain = 0.02):
+def weights_init(net, init_type = 'normal', init_gain = 0.02, seed = None):
     """Initialize network weights.
     Parameters:
         net (network)   -- network to be initialized
         init_type (str) -- the name of an initialization method: normal | xavier | kaiming | orthogonal
         init_gain (float)    -- scaling factor for normal, xavier and orthogonal
+        seed (int)      -- random seed for reproducibility
     In our paper, we choose the default setting: zero mean Gaussian distribution with a standard deviation of 0.02
     """
+    # Set seed if provided
+    if seed is not None:
+        import random
+        import numpy as np
+        old_torch_state = torch.get_rng_state()
+        old_cuda_state = torch.cuda.get_rng_state() if torch.cuda.is_available() else None
+        old_numpy_state = np.random.get_state()
+        old_random_state = random.getstate()
+        
+        # Set seed for all random number generators
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
+        np.random.seed(seed)
+        random.seed(seed)
+    
     def init_func(m):
         classname = m.__class__.__name__
         if hasattr(m, 'weight') and classname.find('Conv') != -1:
@@ -34,7 +51,17 @@ def weights_init(net, init_type = 'normal', init_gain = 0.02):
 
     # apply the initialization function <init_func>
     print('initialize network with %s type' % init_type)
+    if seed is not None:
+        print(f'Using seed {seed} for reproducible initialization')
     net.apply(init_func)
+    
+    # Restore previous random states if seed was provided
+    if seed is not None:
+        torch.set_rng_state(old_torch_state)
+        if torch.cuda.is_available() and old_cuda_state is not None:
+            torch.cuda.set_rng_state(old_cuda_state)
+        np.random.set_state(old_numpy_state)
+        random.setstate(old_random_state)
 
 # ----------------------------------------
 #                Generator

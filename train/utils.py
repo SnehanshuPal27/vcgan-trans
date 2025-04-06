@@ -9,31 +9,82 @@ import network
 import pwcnet
 from torch.utils.data.sampler import Sampler
 from torch.utils.data import DataLoader
+from reproducible_init import set_seed, save_init_weights, load_init_weights
 
-def create_generator(opt):
+def create_generator(opt, use_reproducible=False, repro_seed=42, model_variant="base"):
+    """
+    Create and initialize the generator with consistent weights if requested
+    
+    Args:
+        opt: Model options
+        use_reproducible: Whether to use reproducible initialization
+        repro_seed: Seed for reproducible initialization
+        model_variant: Name of model variant for saving/loading weights
+    """
+    # Handle reproducible initialization
+    init_weights_dir = os.path.join(opt.save_path, 'init_weights')
+    init_weights_path = os.path.join(init_weights_dir, f"{model_variant}_init_weights_s{repro_seed}.pth")
+    
     if opt.load_name:
-        # Initialize the networks
+        # Initialize the networks with pretrained weights
         colorizationnet = network.SecondStageNet(opt)
         pretrained_dict = torch.load(opt.load_name)
         load_dict(colorizationnet, pretrained_dict)
-        print('Generator is loaded!')
+        print('Generator is loaded from pretrained model!')
     else:
         # Initialize the networks
         colorizationnet = network.FirstStageNet(opt)
         print('Generator is created!')
-        # Init the networks
-        network.weights_init(colorizationnet, init_type = opt.init_type, init_gain = opt.init_gain)
+        
+        # Handle reproducible initialization
+        if use_reproducible:
+            if os.path.exists(init_weights_path):
+                # Load saved initial weights
+                colorizationnet = load_init_weights(colorizationnet, init_weights_path)
+            else:
+                # Initialize with seed and save
+                network.weights_init(colorizationnet, init_type=opt.init_type, 
+                                    init_gain=opt.init_gain, seed=repro_seed)
+                os.makedirs(init_weights_dir, exist_ok=True)
+                save_init_weights(colorizationnet, init_weights_dir, 
+                                 f"{model_variant}_init_weights_s{repro_seed}")
+        else:
+            # Normal initialization
+            network.weights_init(colorizationnet, init_type=opt.init_type, init_gain=opt.init_gain)
+        
+        # Load feature extractors
         pretrained_dict = torch.load(opt.feature_extractor_path)
         load_dict(colorizationnet.fenet, pretrained_dict)
         load_dict(colorizationnet.fenet2, pretrained_dict)
-        print('Generator is loaded with %s!' % (opt.feature_extractor_path))
+        print('Generator feature extractors loaded from %s!' % (opt.feature_extractor_path))
+        
     return colorizationnet
 
-def create_discriminator(opt):
+def create_discriminator(opt, use_reproducible=False, repro_seed=42, model_variant="base"):
+    """Create discriminator with consistent weights if requested"""
+    # Handle reproducible initialization
+    init_weights_dir = os.path.join(opt.save_path, 'init_weights')
+    init_weights_path = os.path.join(init_weights_dir, f"{model_variant}_disc_init_weights_s{repro_seed}.pth")
+    
     # Initialize the networks
     discriminator = network.PatchDiscriminator70(opt)
-    # Init the networks
-    network.weights_init(discriminator, init_type = opt.init_type, init_gain = opt.init_gain)
+    
+    # Handle reproducible initialization
+    if use_reproducible:
+        if os.path.exists(init_weights_path):
+            # Load saved initial weights
+            discriminator = load_init_weights(discriminator, init_weights_path)
+        else:
+            # Initialize with seed and save
+            network.weights_init(discriminator, init_type=opt.init_type, 
+                                init_gain=opt.init_gain, seed=repro_seed)
+            os.makedirs(init_weights_dir, exist_ok=True)
+            save_init_weights(discriminator, init_weights_dir, 
+                             f"{model_variant}_disc_init_weights_s{repro_seed}")
+    else:
+        # Normal initialization
+        network.weights_init(discriminator, init_type=opt.init_type, init_gain=opt.init_gain)
+        
     return discriminator
 
 def create_pwcnet(opt):
@@ -62,14 +113,26 @@ def create_perceptualnet(opt):
         param.requires_grad = False
     return perceptualnet
     
-def load_dict(process_net, pretrained_dict):
-    # Get the dict from processing network
+def load_dict(process_net, pretrained_dict, verbose=True):
+    """Load weights from source model to target model, handling missing keys"""
+    # Get the dict from target network
     process_dict = process_net.state_dict()
-    # Delete the extra keys of pretrained_dict that do not belong to process_dict
-    pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in process_dict}
-    # Update process_dict using pretrained_dict
-    process_dict.update(pretrained_dict)
-    # Load the updated dict to processing network
+    
+    # Find keys in both dicts
+    common_keys = {k for k in pretrained_dict.keys() if k in process_dict}
+    missing_keys = {k for k in process_dict.keys() if k not in pretrained_dict}
+    
+    if verbose:
+        print(f"Loading {len(common_keys)} common parameters")
+        print(f"Randomly initializing {len(missing_keys)} missing parameters (including transformer layers)")
+        if len(missing_keys) <= 20:
+            print("Missing keys:", missing_keys)
+    
+    # Keep only keys from pretrained_dict that exist in process_dict
+    filtered_dict = {k: v for k, v in pretrained_dict.items() if k in process_dict}
+    
+    # Update process dict and load
+    process_dict.update(filtered_dict)
     process_net.load_state_dict(process_dict)
     return process_net
 

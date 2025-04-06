@@ -13,7 +13,7 @@ if __name__ == "__main__":
     parser.add_argument('--save_by_iter', type = int, default = 10000, help = 'interval between model checkpoints (by iterations)')
     parser.add_argument('--save_path', type = str, default = './models', help = 'save the pre-trained model to certain path')
     parser.add_argument('--sample_path', type = str, default = './samples', help = 'save the pre-trained model to certain path')
-    parser.add_argument('--load_name', type = str, default = './trained_models/First_Stage_epoch10_bs16.pth', help = 'load the pre-trained model with certain epoch')
+    parser.add_argument('--load_name', type = str, default = './trained_models/First_Stage_epoch5_bs16.pth', help = 'load the pre-trained model with certain epoch')
     parser.add_argument('--pwcnet_path', type = str, default = './trained_models/pwcNet-default.pytorch', help = 'the path that contains the pre-trained PWCNet model')
     parser.add_argument('--perceptual_path', type = str, default = './trained_models/vgg16_pretrained.pth', help = 'the path that contains the pre-trained VGG-16 model')
     parser.add_argument('--video_class_txt', type = str, default = './txt/filtered_DAVIS_videvo_train_class.txt', help = 'the path that contains DAVIS_videvo_train_class.txt')
@@ -70,6 +70,9 @@ if __name__ == "__main__":
     parser.add_argument('--angle_aug', type = bool, default = False, help = 'geometry augmentation (rotation, flipping)')
     parser.add_argument('--scale_min', type = float, default = 1, help = 'min scaling factor')
     parser.add_argument('--scale_max', type = float, default = 1, help = 'max scaling factor')
+    parser.add_argument('--reproducible', type=bool, default=False, help='Use reproducible initialization')
+    parser.add_argument('--repro_seed', type=int, default=42, help='Seed for reproducible initialization')
+    parser.add_argument('--model_variant', type=str, default='base', help='Model variant name for reproducible init')
     opt = parser.parse_args()
     print(opt)
     

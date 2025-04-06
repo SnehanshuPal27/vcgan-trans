@@ -33,7 +33,9 @@ def trainer_noGAN(opt):
     criterion_L1 = torch.nn.L1Loss().cuda()
 
     # Initialize Generator
-    generator = utils.create_generator(opt)
+    generator = utils.create_generator(opt, use_reproducible=opt.reproducible, 
+                                 repro_seed=opt.repro_seed, 
+                                 model_variant=opt.model_variant)
     perceptualnet = utils.create_perceptualnet(opt)
 
     # To device
@@ -179,7 +181,9 @@ def trainer_LSGAN(opt):
     criterion_MSE = torch.nn.MSELoss().cuda()
 
     # Initialize Generator
-    generator = utils.create_generator(opt)
+    generator = utils.create_generator(opt, use_reproducible=opt.reproducible, 
+                                 repro_seed=opt.repro_seed, 
+                                 model_variant=opt.model_variant)
     discriminator = utils.create_discriminator(opt)
     perceptualnet = utils.create_perceptualnet(opt)
 
@@ -357,7 +361,9 @@ def trainer_WGAN(opt):
     criterion_L1 = torch.nn.L1Loss().cuda()
 
     # Initialize Generator
-    generator = utils.create_generator(opt)
+    generator = utils.create_generator(opt, use_reproducible=opt.reproducible, 
+                                 repro_seed=opt.repro_seed, 
+                                 model_variant=opt.model_variant)
     discriminator = utils.create_discriminator(opt)
     perceptualnet = utils.create_perceptualnet(opt)
 
@@ -526,7 +532,9 @@ def trainer_WGANGP(opt):
     criterion_L1 = torch.nn.L1Loss().cuda()
     
     # Initialize Generator
-    generator = utils.create_generator(opt)
+    generator = utils.create_generator(opt, use_reproducible=opt.reproducible, 
+                                 repro_seed=opt.repro_seed, 
+                                 model_variant=opt.model_variant)
     discriminator = utils.create_discriminator(opt)
     perceptualnet = utils.create_perceptualnet(opt)
 
@@ -563,7 +571,7 @@ def trainer_WGANGP(opt):
     def save_model(opt, epoch, iteration, len_dataset, generator):
         """Save the model at "checkpoint_interval" and its multiple"""
         if opt.save_mode == 'epoch':
-            model_name = 'First_Stage_epoch%d_bs%d.pth' % (epoch, opt.batch_size)
+            model_name = 'First_Stage_epoch_seed%d_bs%d.pth' % (epoch, opt.batch_size)
         if opt.save_mode == 'iter':
             model_name = 'First_Stage_iter%d_bs%d.pth' % (iteration, opt.batch_size)
         save_name = os.path.join(opt.save_path, model_name)
@@ -701,4 +709,3 @@ def trainer_WGANGP(opt):
             img_list = [fake_RGB, true_RGB]
             name_list = ['pred', 'gt']
             utils.save_sample_png(sample_folder = opt.sample_path, sample_name = 'epoch%d' % (epoch + 1), img_list = img_list, name_list = name_list)
-        
